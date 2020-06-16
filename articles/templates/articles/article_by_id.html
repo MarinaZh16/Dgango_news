@@ -1,0 +1,41 @@
+{% extends 'articles/base.html' %}
+
+{% block title %}{{ article_id }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% include 'articles/includes/now.html' %}
+        <h1>{{ article.title }}</h1>
+        <div>{{ article.text }}</div>
+        <hr/>
+        Posted by: {{ article.author }} at {{ article.created_at }}
+        <br/>
+        {% if user.is_authenticated %}
+            <form id="like_form" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">&#9829; <span
+                        id="likes_count">{{ article.likes_set.count }}</span></button>
+            </form>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block extrajs %}
+    <script type="text/javascript">
+        {# Dont scare this. It was just complicated example. lol #}
+        $(document).ready(
+            $("#like_form").submit(function (e) {
+                e.preventDefault();
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: '{% url 'like_article' article.id %}',
+                        success: function (resp) {
+                            $("#likes_count").html(resp.count);
+                        }
+                    }
+                )
+            }));
+    </script>
+{% endblock %}

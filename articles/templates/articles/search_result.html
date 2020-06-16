@@ -1,0 +1,17 @@
+{% extends 'articles/base.html' %}
+
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% if articles|length > 0 %} Search results for: {{ search }} {% endif %}
+        {% for article in articles %}
+            <p><a href="{% url 'article_by_id' article.id %}">{{ article.title }}</a></p>
+            <small>{{ article.text | truncatechars:100 }}</small>
+            {% if not forloop.last %}
+                <hr style="border-top: 1px solid rgb(66,66,66)"/>{% endif %}
+        {% empty %}
+            No articles :C
+        {% endfor %}</div>
+{% endblock %}

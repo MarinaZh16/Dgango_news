@@ -1,0 +1,25 @@
+from django import forms
+from . import models
+
+
+class RegisterForm(forms.Form):
+    username = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
+    password = forms.CharField(required=True, widget=forms.PasswordInput)
+    password2 = forms.CharField(required=True, widget=forms.PasswordInput)
+
+    def clean_password(self):
+        if self.data['password'] != self.data['password2']:
+            raise forms.ValidationError('''Password don't match''')
+
+    def clean_username(self):
+        if models.User.objects.filter(username__iexact=self.data.get('username').lower()):
+            raise forms.ValidationError('Username already taken.')
+        return self.data['username']
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(required=True)
+    password = forms.CharField(required=True, widget=forms.PasswordInput)
+
+
